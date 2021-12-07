@@ -6,7 +6,7 @@ import (
 )
 
 func (r *Runner) Day03Part1(lines []string) {
-	chars := stringArrayToCharArrayArray(lines)
+	chars := StringArrayToCharArrayArray(lines)
 	diags := bitCounts(chars)
 
 	gamma, epsilon := 0, 0
@@ -24,7 +24,7 @@ func (r *Runner) Day03Part1(lines []string) {
 }
 
 func (r *Runner) Day03Part2(lines []string) {
-	chars := stringArrayToCharArrayArray(lines)
+	chars := StringArrayToCharArrayArray(lines)
 
 	oRating, err := filterUntilFound(chars, true)
 	if err != nil {
@@ -118,42 +118,3 @@ func bitCounts(lines [][]rune) []binaryDiagnostic {
 
 	return diags
 }
-
-func stringArrayToCharArrayArray(lines []string) [][]rune {
-	arr := [][]rune{}
-	for _, l := range lines {
-		arr = append(arr, []rune(l))
-	}
-	return arr
-}
-
-/*
-func printCharArrayArray(charsArr [][]rune) {
-	for _, chars := range charsArr {
-		for _, c := range chars {
-			if c == '0' {
-				fmt.Print(0)
-			} else if c == '1' {
-				fmt.Print(1)
-			}
-		}
-		fmt.Print(",")
-	}
-	fmt.Println()
-}
-
-func binaryStringsToInts(lines []string) []int64 {
-
-	ints := []int64{}
-
-	for _, line := range lines {
-		i, err := strconv.ParseInt(line, 2, 64)
-		if err != nil {
-			panic(err)
-		}
-		ints = append(ints, i)
-	}
-
-	return ints
-}
-*/

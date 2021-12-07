@@ -12,7 +12,7 @@ func (r *Runner) Day02Part1(lines []string) {
 
 	for _, l := range lines {
 
-		c, v := lineToCommandValuePair(l)
+		c, v := lineToDay02CommandValuePair(l)
 
 		switch c {
 		case "forward":
@@ -33,7 +33,7 @@ func (r *Runner) Day02Part2(lines []string) {
 
 	for _, l := range lines {
 
-		c, v := lineToCommandValuePair(l)
+		c, v := lineToDay02CommandValuePair(l)
 
 		switch c {
 		case "forward":
@@ -49,7 +49,7 @@ func (r *Runner) Day02Part2(lines []string) {
 	fmt.Println(h * d)
 }
 
-func lineToCommandValuePair(line string) (string, int) {
+func lineToDay02CommandValuePair(line string) (string, int) {
 
 	sl := strings.Split(line, " ")
 	c := sl[0]

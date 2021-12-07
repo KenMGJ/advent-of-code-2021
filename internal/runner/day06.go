@@ -2,8 +2,6 @@ package runner
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 )
 
 const day06Part1Iterations = 80
@@ -18,7 +16,7 @@ func (r *Runner) Day06Part2(lines []string) {
 }
 
 func runDay06(lines []string, iterations int) {
-	fish := parseDay06Input(lines)
+	fish := OneLineCommaSeparatedToIntSlice(lines)
 
 	var itCount [9]int
 	for _, f := range fish {
@@ -39,20 +37,4 @@ func runDay06(lines []string, iterations int) {
 		sum += i
 	}
 	fmt.Println(sum)
-}
-
-func parseDay06Input(lines []string) []int {
-
-	fish := []int{}
-
-	firstLine := strings.Split(lines[0], ",")
-	for _, l := range firstLine {
-		f, err := strconv.Atoi(l)
-		if err != nil {
-			panic(err)
-		}
-		fish = append(fish, f)
-	}
-
-	return fish
 }

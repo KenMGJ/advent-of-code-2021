@@ -136,7 +136,7 @@ func parseDay04Input(lines []string) ([]int, [][][]*bingoTile) {
 	return draws, boards
 }
 
-func printBingoBoards(boards [][][]*bingoTile) {
+func PrintBingoBoards(boards [][][]*bingoTile) {
 	for i, board := range boards {
 		fmt.Printf("Board #%d\n", i+1)
 		for _, row := range board {
