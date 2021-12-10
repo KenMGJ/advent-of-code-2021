@@ -180,12 +180,6 @@ func makeSignalToValueMap(signals []string) map[int]string {
 	return valToSig
 }
 
-func removeDay08SignalFromSlice(signals []string, idx int) []string {
-	copy(signals[idx:], signals[idx+1:])
-	signals[len(signals)-1] = ""
-	return signals[:len(signals)-1]
-}
-
 type day08Data struct {
 	Input  []string
 	Output []string
