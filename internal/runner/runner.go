@@ -20,10 +20,10 @@ func (r *Runner) Run(day int, test bool) error {
 	if test {
 		dirname = "test"
 	} else {
-		dirname = "input"
+		dirname = "live"
 	}
 
-	filename := fmt.Sprintf("%s/%02d.txt", dirname, day)
+	filename := fmt.Sprintf("input/%s/%02d.txt", dirname, day)
 
 	lines, err := readFile(filename)
 	if err != nil {
