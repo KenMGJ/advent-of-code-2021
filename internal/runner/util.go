@@ -36,17 +36,7 @@ func MaxInt(a, b int) int {
 }
 
 func MaxOfIntList(ints []int) int {
-	if len(ints) < 1 {
-		panic("empty list")
-	}
-
-	max := ints[0]
-	for i := 1; i < len(ints); i++ {
-		if ints[i] > max {
-			max = ints[i]
-		}
-	}
-
+	_, max := MinAndMaxOfIntList(ints)
 	return max
 }
 
@@ -57,18 +47,25 @@ func MinInt(a, b int) int {
 	return b
 }
 
-func MinOfIntList(ints []int) int {
+func MinAndMaxOfIntList(ints []int) (int, int) {
 	if len(ints) < 1 {
 		panic("empty list")
 	}
 
-	min := ints[0]
+	min, max := ints[0], ints[0]
 	for i := 1; i < len(ints); i++ {
 		if ints[i] < min {
 			min = ints[i]
+		} else if ints[i] > max {
+			max = ints[i]
 		}
 	}
 
+	return min, max
+}
+
+func MinOfIntList(ints []int) int {
+	min, _ := MinAndMaxOfIntList(ints)
 	return min
 }
 
