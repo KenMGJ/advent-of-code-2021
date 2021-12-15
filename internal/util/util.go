@@ -99,6 +99,18 @@ func StringArrayToCharArrayArray(lines []string) [][]rune {
 	return arr
 }
 
+func StringArrayToIntArrayArray(lines []string) [][]int {
+	arr := [][]int{}
+	for _, l := range lines {
+		intLine := []int{}
+		for _, c := range strings.Split(l, "") {
+			intLine = append(intLine, MustConvertDecimalStringToInt(c))
+		}
+		arr = append(arr, intLine)
+	}
+	return arr
+}
+
 func OneLineCommaSeparatedToIntSlice(lines []string) []int {
 
 	ints := []int{}
