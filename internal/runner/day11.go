@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/KenMGJ/advent-of-code-2021/internal/pairs"
+	"github.com/KenMGJ/advent-of-code-2021/internal/util"
 )
 
 func (r *Runner) Day11Part1(lines []string) {
@@ -110,7 +111,7 @@ func parseOctopuses(lines []string) [][]Octopus {
 	for _, l := range lines {
 		octopusRow := []Octopus{}
 		for _, s := range strings.Split(l, "") {
-			v := MustConvertDecimalStringToInt(s)
+			v := util.MustConvertDecimalStringToInt(s)
 			octopusRow = append(octopusRow, Octopus{Level: v})
 		}
 		octopusGrid = append(octopusGrid, octopusRow)

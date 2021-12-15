@@ -1,6 +1,10 @@
 package runner
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/KenMGJ/advent-of-code-2021/internal/util"
+)
 
 func (r *Runner) Day07Part1(lines []string) {
 	fuel := day07Runner(lines, calcFuel)
@@ -15,13 +19,13 @@ func (r *Runner) Day07Part2(lines []string) {
 type calFuelFunc func(counts []int, pos int) int
 
 func day07Runner(lines []string, fn calFuelFunc) int {
-	ints := OneLineCommaSeparatedToIntSlice(lines)
+	ints := util.OneLineCommaSeparatedToIntSlice(lines)
 
-	min := MinOfIntList(ints)
+	min := util.MinOfIntList(ints)
 	if min != 0 {
 		panic("assert min = 0")
 	}
-	max := MaxOfIntList(ints)
+	max := util.MaxOfIntList(ints)
 
 	counts := make([]int, max+1)
 	for _, i := range ints {
@@ -44,7 +48,7 @@ func calcFuel(counts []int, pos int) int {
 	fuel := 0
 
 	for i, c := range counts {
-		fuel += c * AbsInt(i-pos)
+		fuel += c * util.AbsInt(i-pos)
 	}
 
 	return fuel
@@ -54,7 +58,7 @@ func calcFuelPart2(counts []int, pos int) int {
 	fuel := 0
 
 	for i, c := range counts {
-		d := AbsInt(i - pos)
+		d := util.AbsInt(i - pos)
 		cost := 0
 		for i := 0; i <= d; i++ {
 			cost += i

@@ -2,6 +2,8 @@ package runner
 
 import (
 	"fmt"
+
+	"github.com/KenMGJ/advent-of-code-2021/internal/util"
 )
 
 const day06Part1Iterations = 80
@@ -16,7 +18,7 @@ func (r *Runner) Day06Part2(lines []string) {
 }
 
 func runDay06(lines []string, iterations int) {
-	fish := OneLineCommaSeparatedToIntSlice(lines)
+	fish := util.OneLineCommaSeparatedToIntSlice(lines)
 
 	var itCount [9]int
 	for _, f := range fish {

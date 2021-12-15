@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/KenMGJ/advent-of-code-2021/internal/util"
 )
 
 func (r *Runner) Day14Part1(lines []string) {
@@ -48,7 +50,7 @@ func runDay14(template string, rules map[string]string, iterations int) int {
 		vals = append(vals, v)
 	}
 
-	min, max := MinAndMaxOfIntList(vals)
+	min, max := util.MinAndMaxOfIntList(vals)
 	return max - min
 }
 

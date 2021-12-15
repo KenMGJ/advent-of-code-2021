@@ -3,6 +3,8 @@ package runner
 import (
 	"fmt"
 	"regexp"
+
+	"github.com/KenMGJ/advent-of-code-2021/internal/util"
 )
 
 func (r *Runner) Day05Part1(lines []string) {
@@ -12,8 +14,8 @@ func (r *Runner) Day05Part1(lines []string) {
 
 	for _, v := range vents {
 		if v.A.X == v.B.X {
-			minY := MinInt(v.A.Y, v.B.Y)
-			maxY := MaxInt(v.A.Y, v.B.Y)
+			minY := util.MinInt(v.A.Y, v.B.Y)
+			maxY := util.MaxInt(v.A.Y, v.B.Y)
 
 			for i := minY; i <= maxY; i++ {
 				point := Point{X: v.A.X, Y: i}
@@ -22,8 +24,8 @@ func (r *Runner) Day05Part1(lines []string) {
 				floor[point] = val + 1
 			}
 		} else if v.A.Y == v.B.Y {
-			minX := MinInt(v.A.X, v.B.X)
-			maxX := MaxInt(v.A.X, v.B.X)
+			minX := util.MinInt(v.A.X, v.B.X)
+			maxX := util.MaxInt(v.A.X, v.B.X)
 
 			for i := minX; i <= maxX; i++ {
 				point := Point{X: i, Y: v.A.Y}
@@ -51,8 +53,8 @@ func (r *Runner) Day05Part2(lines []string) {
 
 	for _, v := range vents {
 		if v.A.X == v.B.X {
-			minY := MinInt(v.A.Y, v.B.Y)
-			maxY := MaxInt(v.A.Y, v.B.Y)
+			minY := util.MinInt(v.A.Y, v.B.Y)
+			maxY := util.MaxInt(v.A.Y, v.B.Y)
 
 			for i := minY; i <= maxY; i++ {
 				point := Point{X: v.A.X, Y: i}
@@ -61,8 +63,8 @@ func (r *Runner) Day05Part2(lines []string) {
 				floor[point] = val + 1
 			}
 		} else if v.A.Y == v.B.Y {
-			minX := MinInt(v.A.X, v.B.X)
-			maxX := MaxInt(v.A.X, v.B.X)
+			minX := util.MinInt(v.A.X, v.B.X)
+			maxX := util.MaxInt(v.A.X, v.B.X)
 
 			for i := minX; i <= maxX; i++ {
 				point := Point{X: i, Y: v.A.Y}
@@ -72,8 +74,8 @@ func (r *Runner) Day05Part2(lines []string) {
 			}
 		} else {
 
-			diffX := AbsInt(v.A.X - v.B.X)
-			diffY := AbsInt(v.A.Y - v.B.Y)
+			diffX := util.AbsInt(v.A.X - v.B.X)
+			diffY := util.AbsInt(v.A.Y - v.B.Y)
 
 			if diffX != diffY {
 				continue
@@ -129,10 +131,10 @@ func parseDay05Input(lines []string) []LineSegment {
 	for _, l := range lines {
 		matches := matcher.FindStringSubmatch(l)
 
-		x1 := MustConvertDecimalStringToInt(matches[1])
-		y1 := MustConvertDecimalStringToInt(matches[2])
-		x2 := MustConvertDecimalStringToInt(matches[3])
-		y2 := MustConvertDecimalStringToInt(matches[4])
+		x1 := util.MustConvertDecimalStringToInt(matches[1])
+		y1 := util.MustConvertDecimalStringToInt(matches[2])
+		x2 := util.MustConvertDecimalStringToInt(matches[3])
+		y2 := util.MustConvertDecimalStringToInt(matches[4])
 
 		vents = append(vents, LineSegment{
 			A: Point{X: x1, Y: y1},

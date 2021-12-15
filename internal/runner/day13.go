@@ -5,6 +5,7 @@ import (
 	"regexp"
 
 	"github.com/KenMGJ/advent-of-code-2021/internal/pairs"
+	"github.com/KenMGJ/advent-of-code-2021/internal/util"
 )
 
 func (r *Runner) Day13Part1(lines []string) {
@@ -160,12 +161,12 @@ func parseDay13Input(lines []string) ([][]bool, []day13Fold) {
 	for _, line := range lines {
 		matches := coordinateMatcher.FindStringSubmatch(line)
 		if len(matches) == 3 {
-			a := MustConvertDecimalStringToInt(matches[1])
+			a := util.MustConvertDecimalStringToInt(matches[1])
 			if a > width {
 				width = a
 			}
 
-			b := MustConvertDecimalStringToInt(matches[2])
+			b := util.MustConvertDecimalStringToInt(matches[2])
 			if b > height {
 				height = b
 			}
@@ -176,14 +177,14 @@ func parseDay13Input(lines []string) ([][]bool, []day13Fold) {
 
 		matches = foldAlongYMatcher.FindStringSubmatch(line)
 		if len(matches) == 2 {
-			val := MustConvertDecimalStringToInt(matches[1])
+			val := util.MustConvertDecimalStringToInt(matches[1])
 			folds = append(folds, day13Fold{Along: FOLD_OVER_Y, Value: val})
 			continue
 		}
 
 		matches = foldAlongXMatcher.FindStringSubmatch(line)
 		if len(matches) == 2 {
-			val := MustConvertDecimalStringToInt(matches[1])
+			val := util.MustConvertDecimalStringToInt(matches[1])
 			folds = append(folds, day13Fold{Along: FOLD_OVER_X, Value: val})
 			continue
 		}

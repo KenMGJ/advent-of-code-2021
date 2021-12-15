@@ -3,10 +3,12 @@ package runner
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/KenMGJ/advent-of-code-2021/internal/util"
 )
 
 func (r *Runner) Day03Part1(lines []string) {
-	chars := StringArrayToCharArrayArray(lines)
+	chars := util.StringArrayToCharArrayArray(lines)
 	diags := bitCounts(chars)
 
 	gamma, epsilon := 0, 0
@@ -24,7 +26,7 @@ func (r *Runner) Day03Part1(lines []string) {
 }
 
 func (r *Runner) Day03Part2(lines []string) {
-	chars := StringArrayToCharArrayArray(lines)
+	chars := util.StringArrayToCharArrayArray(lines)
 
 	oRating, err := filterUntilFound(chars, true)
 	if err != nil {
