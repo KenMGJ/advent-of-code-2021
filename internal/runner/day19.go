@@ -5,103 +5,126 @@ import (
 	"regexp"
 
 	"github.com/KenMGJ/advent-of-code-2021/internal/point"
+	"github.com/KenMGJ/advent-of-code-2021/internal/sets"
 	"github.com/KenMGJ/advent-of-code-2021/internal/util"
 )
 
 func (r *Runner) Day19Part1(lines []string) {
-	beacons := parseDay19(lines)
-	fmt.Println(beacons)
+	regions := parseDay19(lines)
 
-	// oBeacon := beacons[0]
-	// oBeaconDistances := makeDistanceToPairMap(oBeacon)
-
-	/*
-		for i := 1; i < len(beacons); i++ {
-			cmp := beacons[i]
-			cmpAll := point.Rotations(cmp)
-			for _, ca := range cmpAll {
-				fmt.Println(ca)
-				cmpDistances := makeDistanceToPairMap(ca)
-				for k, v := range oBeaconDistances {
-
-					cv, ok := cmpDistances[k]
-					if ok {
-						vxDiff := v[0][0].X - v[0][1].X
-						fmt.Println(vxDiff)
-						vyDiff := v[0][0].Y - v[0][1].Y
-						fmt.Println(vyDiff)
-						vzDiff := v[0][0].Z - v[0][1].Z
-						fmt.Println(vzDiff)
-						cvxDiff := cv[0][0].X - cv[0][1].X
-						fmt.Println(cvxDiff)
-						cvyDiff := cv[0][0].Y - cv[0][1].Y
-						fmt.Println(cvyDiff)
-						cvzDiff := cv[0][0].Z - cv[0][1].Z
-						fmt.Println(cvzDiff)
-
-						if vxDiff == cvxDiff && vyDiff == cvyDiff && vzDiff == cvzDiff {
-							fmt.Println(k)
-							fmt.Println(v)
-							fmt.Println(cv)
-							fmt.Println()
-						}
-					}
-				}
-			}
-		}
-	*/
-}
-
-func makeDistanceToPairMap(points []point.Point3D) map[float64][][]point.Point3D {
-	distances := map[float64][][]point.Point3D{}
-
-	for i := 0; i < len(points)-1; i++ {
-		for j := i + 1; j < len(points); j++ {
-			pI := points[i]
-			pJ := points[j]
-			key := pI.DistanceFrom(pJ)
-			v, ok := distances[key]
-			if !ok {
-				v = [][]point.Point3D{}
-			}
-			pts := []point.Point3D{}
-			if pI.X >= pJ.X {
-				pts = append(pts, pI, pJ)
-			} else {
-				pts = append(pts, pJ, pI)
-			}
-			v = append(v, pts)
-			distances[key] = v
-		}
+	r0 := regions[0]
+	r0set := sets.NewStringSet()
+	for k := range r0.DistPointMap() {
+		r0set.Add(string(k))
 	}
 
-	return distances
+	i := 1
+	for j := 0; j <= 24; j++ {
+		r1 := regions[i]
+		r1set := sets.NewStringSet()
+		for k := range r1.DistPointMap() {
+			r1set.Add(string(k))
+		}
+
+		intr0r1 := r0set.Intersect(r1set)
+		if intr0r1.Size() >= 66 {
+			fmt.Println(i)
+			fmt.Println(intr0r1)
+
+			anyDistPointKey := DistPointKey(intr0r1.Vals()[0])
+			p0 := r0.DistPointMap()[anyDistPointKey]
+			p1 := r1.DistPointMap()[anyDistPointKey]
+
+			fmt.Println(p0)
+			fmt.Println(p1)
+
+			break
+		}
+
+		r1.Rotate()
+	}
+
 }
 
 func (r *Runner) Day19Part2(lines []string) {
-	/*
-		beacons := parseDay19(lines)
-		fmt.Println(beacons[0][0])
-		seq := beacons[0][0].Rotations()
-		fmt.Println(seq)
+}
 
-		rots := point.Rotations(beacons[0])
-		fmt.Println(rots)
-	*/
+type Point3DPair struct {
+	A *point.Point3D
+	B *point.Point3D
+}
+
+func (p *Point3DPair) String() string {
+	return fmt.Sprintf("(%d,%d,%d) -> (%d,%d,%d)", p.A.X(), p.A.Y(), p.A.Z(), p.B.X(), p.B.Y(), p.B.Z())
 }
 
 type ScannerRegion struct {
 	ID       int
 	Location point.Point3D
-	Beacons  []point.Point3D
+	Beacons  []*point.Point3D
+}
+
+type DistPointKey string
+
+var distPointKeyMatcher = regexp.MustCompile(`\((\d+),(\d+),(\d+)\)`)
+
+func (d DistPointKey) Parts() (int, int, int) {
+
+	matches := distPointKeyMatcher.FindStringSubmatch(string(d))
+	if len(matches) != 4 {
+		panic("at the disco")
+	}
+
+	x := util.MustConvertDecimalStringToInt(matches[1])
+	y := util.MustConvertDecimalStringToInt(matches[2])
+	z := util.MustConvertDecimalStringToInt(matches[3])
+
+	return x, y, z
+}
+
+func (s *ScannerRegion) DistPointMap() map[DistPointKey]*Point3DPair {
+	mapP2P := map[DistPointKey]*Point3DPair{}
+
+	for i := 0; i < len(s.Beacons)-1; i++ {
+		for j := i + 1; j < len(s.Beacons); j++ {
+
+			absX := s.Beacons[i].X() - s.Beacons[j].X()
+			if absX < 0 {
+				absX *= -1
+			}
+
+			absY := s.Beacons[i].Y() - s.Beacons[j].Y()
+			if absY < 0 {
+				absY *= -1
+			}
+
+			absZ := s.Beacons[i].Z() - s.Beacons[j].Z()
+			if absZ < 0 {
+				absZ *= -1
+			}
+
+			mapP2P[DistPointKey(fmt.Sprintf("(%d,%d,%d)", absX, absY, absZ))] = &Point3DPair{
+				A: s.Beacons[i],
+				B: s.Beacons[j],
+			}
+
+		}
+	}
+
+	return mapP2P
+}
+
+func (s *ScannerRegion) Rotate() {
+	for _, b := range s.Beacons {
+		b.Rotate()
+	}
 }
 
 func (s *ScannerRegion) String() string {
-	return fmt.Sprintf("SR{ID: %d Count: %d}", s.ID, len(s.Beacons))
+	return fmt.Sprintf("{%d %v}", s.ID, s.Beacons)
 }
 
 var scannerMatcher = regexp.MustCompile(`^--- scanner (\d+) ---$`)
-var coordinate2DMatcher = regexp.MustCompile(`^(-?\d+),(-?\d+)$`)
 var coordinate3DMatcher = regexp.MustCompile(`^(-?\d+),(-?\d+),(-?\d+)$`)
 
 func parseDay19(lines []string) []*ScannerRegion {
@@ -112,37 +135,30 @@ func parseDay19(lines []string) []*ScannerRegion {
 	for _, l := range lines {
 
 		scannerParts := scannerMatcher.FindStringSubmatch(l)
-		c2DParts := coordinate2DMatcher.FindStringSubmatch(l)
 		c3Dparts := coordinate3DMatcher.FindStringSubmatch(l)
 
 		if len(scannerParts) == 2 {
 
-			scanner = &ScannerRegion{
-				ID:      util.MustConvertDecimalStringToInt(scannerParts[1]),
-				Beacons: []point.Point3D{},
+			if scanner != nil {
+				scanners = append(scanners, scanner)
 			}
 
-		} else if len(c2DParts) == 3 {
-
-			scanner.Beacons = append(scanner.Beacons, point.Point3D{
-				X: util.MustConvertDecimalStringToInt(c2DParts[1]),
-				Y: util.MustConvertDecimalStringToInt(c2DParts[2]),
-			})
+			scanner = &ScannerRegion{
+				ID:      util.MustConvertDecimalStringToInt(scannerParts[1]),
+				Beacons: []*point.Point3D{},
+			}
 
 		} else if len(c3Dparts) == 4 {
 
-			scanner.Beacons = append(scanner.Beacons, point.Point3D{
-				X: util.MustConvertDecimalStringToInt(c3Dparts[1]),
-				Y: util.MustConvertDecimalStringToInt(c3Dparts[2]),
-				Z: util.MustConvertDecimalStringToInt(c3Dparts[3]),
-			})
-
-		} else {
-			scanners = append(scanners, scanner)
+			scanner.Beacons = append(scanner.Beacons,
+				point.NewPoint3D(
+					util.MustConvertDecimalStringToInt(c3Dparts[1]),
+					util.MustConvertDecimalStringToInt(c3Dparts[2]),
+					util.MustConvertDecimalStringToInt(c3Dparts[3]),
+				))
 		}
 	}
 
 	scanners = append(scanners, scanner)
-
 	return scanners
 }

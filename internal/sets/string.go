@@ -40,6 +40,19 @@ func (s *StringSet) ContainsAll(elements []string) bool {
 	return true
 }
 
+func (s *StringSet) Intersect(other *StringSet) *StringSet {
+
+	intersect := NewStringSet()
+
+	for _, val := range s.Vals() {
+		if other.Contains(val) {
+			intersect.Add(val)
+		}
+	}
+
+	return intersect
+}
+
 func (s *StringSet) Remove(element string) {
 	delete(s.set, element)
 }
