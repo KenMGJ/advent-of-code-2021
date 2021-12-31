@@ -50,9 +50,31 @@ func (r *Runner) Day22Part1(lines []string) {
 func (r *Runner) Day22Part2(lines []string) {
 	steps := parseDay22(lines)
 
-	for _, s := range steps {
-		fmt.Println(s.Volume())
+	fmt.Println(countLit(steps))
+}
+
+func countLit(cuboids []*RebootStep) int {
+	count := 0
+	processed := []*RebootStep{}
+	for i := len(cuboids) - 1; i >= 0; i-- {
+		c := cuboids[i]
+
+		if c.On {
+			dead := []*RebootStep{}
+
+			for _, p := range processed {
+				intr := cuboidIntersection(p, c)
+				if intr != nil {
+					dead = append(dead, intr)
+				}
+			}
+			count += (c.XMax - c.XMin + 1) * (c.YMax - c.YMin + 1) * (c.ZMax - c.ZMin + 1)
+			count -= countLit(dead)
+		}
+		processed = append(processed, c)
 	}
+
+	return count
 }
 
 type ReactorCore struct {
@@ -122,8 +144,8 @@ func (r *RebootStep) Volume() int {
 	return (r.XMax - r.XMin) * (r.YMax - r.YMin) * (r.ZMax - r.ZMin)
 }
 
-func parseDay22(lines []string) []RebootStep {
-	steps := []RebootStep{}
+func parseDay22(lines []string) []*RebootStep {
+	steps := []*RebootStep{}
 
 	for _, l := range lines {
 		matches := matcherDay22.FindStringSubmatch(l)
@@ -137,7 +159,7 @@ func parseDay22(lines []string) []RebootStep {
 			on = false
 		}
 
-		steps = append(steps, RebootStep{
+		steps = append(steps, &RebootStep{
 			On:   on,
 			XMin: util.MustConvertDecimalStringToInt(matches[2]),
 			XMax: util.MustConvertDecimalStringToInt(matches[3]),
@@ -149,4 +171,27 @@ func parseDay22(lines []string) []RebootStep {
 	}
 
 	return steps
+}
+
+func cuboidIntersection(a, b *RebootStep) *RebootStep {
+	xMaxOfMin := util.MaxInt(a.XMin, b.XMin)
+	xMinOfMax := util.MinInt(a.XMax, b.XMax)
+	yMaxOfMin := util.MaxInt(a.YMin, b.YMin)
+	yMinOfMax := util.MinInt(a.YMax, b.YMax)
+	zMaxOfMin := util.MaxInt(a.ZMin, b.ZMin)
+	zMinOfMax := util.MinInt(a.ZMax, b.ZMax)
+
+	if xMinOfMax-xMaxOfMin >= 0 && yMinOfMax-yMaxOfMin >= 0 && zMinOfMax-zMaxOfMin >= 0 {
+		return &RebootStep{
+			On:   true,
+			XMin: xMaxOfMin,
+			XMax: xMinOfMax,
+			YMin: yMaxOfMin,
+			YMax: yMinOfMax,
+			ZMin: zMaxOfMin,
+			ZMax: zMinOfMax,
+		}
+	}
+
+	return nil
 }
