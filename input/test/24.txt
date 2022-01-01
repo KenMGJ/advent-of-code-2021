@@ -1,0 +1,6 @@
+inp z
+inp x
+mul z 3
+eql z x
+inp x
+mul x -1

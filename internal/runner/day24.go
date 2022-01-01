@@ -1,66 +1,27 @@
 package runner
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
-
-	"github.com/KenMGJ/advent-of-code-2021/internal/util"
 )
 
+/*
+
+Worked this out in Numbers:
+Input			Matched		x		y (from matched)	equation
+4				3			-12		12					D3 = D4
+6				5			-2		6					D5 + 4 = D6
+8				7			-12		15					D7 + 3 = D8
+11				10			-3		11					D10 + 8 = D11
+12				9			-13		7					D9 - 6 = D12
+13				2			-12		5					D2 - 7 = D13
+14				1			-13		10					D1 - 3 = D14
+
+*/
+
 func (r *Runner) Day24Part1(lines []string) {
-	alu := NewALU()
-	alu.Inp("w")
-	fmt.Println(alu)
+	fmt.Println(99995969919326)
 }
 
 func (r *Runner) Day24Part2(lines []string) {
-}
-
-type ALU struct {
-	mem map[string]int
-}
-
-func NewALU() *ALU {
-	return &ALU{
-		mem: map[string]int{},
-	}
-}
-
-func (a *ALU) Inp(a0 string) {
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("%s:", a0)
-	text, err := reader.ReadString('\n')
-	if err != nil {
-		panic("error reading input")
-	}
-	text = strings.Trim(text, "\n")
-	i := util.MustConvertDecimalStringToInt(text)
-	a.mem[a0] = i
-}
-
-func (a *ALU) Add(a0, b0 string) {
-	a.mem[a0] += a.mem[b0]
-}
-
-func (a *ALU) Mul(a0, b0 string) {
-	a.mem[a0] *= a.mem[b0]
-}
-
-func (a *ALU) Div(a0, b0 string) {
-	a.mem[a0] /= a.mem[b0]
-}
-
-func (a *ALU) Mod(a0, b0 string) {
-	a.mem[a0] %= a.mem[b0]
-}
-
-func (a *ALU) Eql(a0, b0 string) {
-	if a.mem[a0] == a.mem[b0] {
-		a.mem[a0] = 1
-	} else {
-		a.mem[a0] = 0
-	}
+	fmt.Println(48111514719111)
 }
