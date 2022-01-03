@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 
 	"github.com/KenMGJ/advent-of-code-2021/internal/point"
@@ -11,42 +12,124 @@ import (
 
 func (r *Runner) Day19Part1(lines []string) {
 	regions := parseDay19(lines)
+	found := normalize(regions)
 
-	r0 := regions[0]
-	r0set := sets.NewStringSet()
-	for k := range r0.DistPointMap() {
-		r0set.Add(string(k))
-	}
-
-	i := 1
-	for j := 0; j <= 24; j++ {
-		r1 := regions[i]
-		r1set := sets.NewStringSet()
-		for k := range r1.DistPointMap() {
-			r1set.Add(string(k))
+	fset := sets.NewStringSet()
+	for _, f := range found {
+		for _, b := range f.Beacons {
+			fset.Add(b.String())
 		}
-
-		intr0r1 := r0set.Intersect(r1set)
-		if intr0r1.Size() >= 66 {
-			fmt.Println(i)
-			fmt.Println(intr0r1)
-
-			anyDistPointKey := DistPointKey(intr0r1.Vals()[0])
-			p0 := r0.DistPointMap()[anyDistPointKey]
-			p1 := r1.DistPointMap()[anyDistPointKey]
-
-			fmt.Println(p0)
-			fmt.Println(p1)
-
-			break
-		}
-
-		r1.Rotate()
 	}
-
+	fmt.Println(fset.Size())
 }
 
 func (r *Runner) Day19Part2(lines []string) {
+	regions := parseDay19(lines)
+	found := normalize(regions)
+
+	max := float64(0)
+	for i := 0; i < len(found)-1; i++ {
+		for j := i + 1; j < len(found); j++ {
+
+			absX := math.Abs(float64(found[i].Location.X() - found[j].Location.X()))
+			absY := math.Abs(float64(found[i].Location.Y() - found[j].Location.Y()))
+			absZ := math.Abs(float64(found[i].Location.Z() - found[j].Location.Z()))
+
+			dist := absX + absY + absZ
+			if dist > max {
+				max = dist
+			}
+		}
+	}
+	fmt.Println(max)
+}
+
+func normalize(regions []*ScannerRegion) []*ScannerRegion {
+
+	found := []*ScannerRegion{}
+	r0 := regions[0]
+	r0.Location = *point.NewPoint3D(0, 0, 0)
+	found = append(found, r0)
+	regions = regions[1:]
+
+	for len(regions) > 0 {
+		for _, f := range found {
+
+			fset := sets.NewFloat64Set()
+			for d := range f.DistPointMap() {
+				fset.Add(d)
+			}
+
+			matchFound := false
+			for i, r := range regions {
+				rset := sets.NewFloat64Set()
+				for d := range r.DistPointMap() {
+					rset.Add(d)
+				}
+
+				for j := 0; j <= 24; j++ {
+
+					intrset := fset.Intersect(rset)
+					if intrset.Size() >= 66 {
+
+						anyDistPointKey := intrset.Vals()[1]
+						f0 := f.DistPointMap()[anyDistPointKey]
+						r0 := r.DistPointMap()[anyDistPointKey]
+
+						dAX := f0.A.X() - r0.A.X()
+						dAY := f0.A.Y() - r0.A.Y()
+						dAZ := f0.A.Z() - r0.A.Z()
+						dBX := f0.B.X() - r0.B.X()
+						dBY := f0.B.Y() - r0.B.Y()
+						dBZ := f0.B.Z() - r0.B.Z()
+
+						if dAX == dBX && dAY == dBY && dAZ == dBZ {
+
+							for _, b := range r.Beacons {
+								b.Set(b.X()+dAX, b.Y()+dAY, b.Z()+dAZ)
+							}
+
+							matchFound = true
+							r.Location = *point.NewPoint3D(dAX, dAY, dAZ)
+							found = append(found, r)
+							regions = append(regions[:i], regions[i+1:]...)
+
+							break
+						}
+
+						dAX = f0.A.X() - r0.B.X()
+						dAY = f0.A.Y() - r0.B.Y()
+						dAZ = f0.A.Z() - r0.B.Z()
+						dBX = f0.B.X() - r0.A.X()
+						dBY = f0.B.Y() - r0.A.Y()
+						dBZ = f0.B.Z() - r0.A.Z()
+
+						if dAX == dBX && dAY == dBY && dAZ == dBZ {
+
+							for _, b := range r.Beacons {
+								b.Set(b.X()+dAX, b.Y()+dAY, b.Z()+dAZ)
+							}
+
+							matchFound = true
+							r.Location = *point.NewPoint3D(dAX, dAY, dAZ)
+							found = append(found, r)
+							regions = append(regions[:i], regions[i+1:]...)
+
+							break
+						}
+					}
+
+					r.Rotate()
+				}
+
+				if matchFound {
+					break
+				}
+			}
+		}
+	}
+
+	return found
 }
 
 type Point3DPair struct {
@@ -64,46 +147,25 @@ type ScannerRegion struct {
 	Beacons  []*point.Point3D
 }
 
-type DistPointKey string
-
-var distPointKeyMatcher = regexp.MustCompile(`\((\d+),(\d+),(\d+)\)`)
-
-func (d DistPointKey) Parts() (int, int, int) {
-
-	matches := distPointKeyMatcher.FindStringSubmatch(string(d))
-	if len(matches) != 4 {
-		panic("at the disco")
-	}
-
-	x := util.MustConvertDecimalStringToInt(matches[1])
-	y := util.MustConvertDecimalStringToInt(matches[2])
-	z := util.MustConvertDecimalStringToInt(matches[3])
-
-	return x, y, z
-}
-
-func (s *ScannerRegion) DistPointMap() map[DistPointKey]*Point3DPair {
-	mapP2P := map[DistPointKey]*Point3DPair{}
+func (s *ScannerRegion) DistPointMap() map[float64]*Point3DPair {
+	mapP2P := map[float64]*Point3DPair{}
 
 	for i := 0; i < len(s.Beacons)-1; i++ {
 		for j := i + 1; j < len(s.Beacons); j++ {
 
-			absX := s.Beacons[i].X() - s.Beacons[j].X()
-			if absX < 0 {
-				absX *= -1
-			}
+			dX := s.Beacons[i].X() - s.Beacons[j].X()
+			dX *= dX
 
-			absY := s.Beacons[i].Y() - s.Beacons[j].Y()
-			if absY < 0 {
-				absY *= -1
-			}
+			dY := s.Beacons[i].Y() - s.Beacons[j].Y()
+			dY *= dY
 
-			absZ := s.Beacons[i].Z() - s.Beacons[j].Z()
-			if absZ < 0 {
-				absZ *= -1
-			}
+			dZ := s.Beacons[i].Z() - s.Beacons[j].Z()
+			dZ *= dZ
 
-			mapP2P[DistPointKey(fmt.Sprintf("(%d,%d,%d)", absX, absY, absZ))] = &Point3DPair{
+			sum := dX + dY + dZ
+			dist := math.Sqrt(float64(sum))
+
+			mapP2P[dist] = &Point3DPair{
 				A: s.Beacons[i],
 				B: s.Beacons[j],
 			}

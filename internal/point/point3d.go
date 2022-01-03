@@ -35,6 +35,16 @@ func (p *Point3D) X() int { return p.x }
 func (p *Point3D) Y() int { return p.y }
 func (p *Point3D) Z() int { return p.z }
 
+func (p *Point3D) Set(x, y, z int) {
+	p.rotation = 0
+	p.refX = x
+	p.x = x
+	p.refY = y
+	p.y = y
+	p.refZ = z
+	p.z = z
+}
+
 func (p *Point3D) Rotate() {
 
 	// https://www.euclideanspace.com/maths/algebra/matrix/transforms/examples/index.htm
@@ -97,5 +107,5 @@ func (p *Point3D) Rotate() {
 }
 
 func (p *Point3D) String() string {
-	return fmt.Sprintf("(%d,%d,%d)", p.x, p.y, p.z)
+	return fmt.Sprintf("(%d, %d, %d)", p.x, p.y, p.z)
 }
